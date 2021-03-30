@@ -1,6 +1,10 @@
 #!/bin/sh
 #Usage:
-    # sh compile_framework.sh [target_name 1]
+    # export PROJECT_NAME="proj-name"
+    # export SRCROOT="./"
+    # export CF_CUS_PRODUDT_NAME="universal/Products"
+
+    # sh compile_framework.sh target-name
 
 # remove arm64 from simulator library if exist.
 function removeArchFrom() {
@@ -20,11 +24,16 @@ function removeArchFrom() {
 # Sets the target folders and the final framework product.
 CUS_TARGET_NAME=$1
 FMK_NAME=${CUS_TARGET_NAME:-${PROJECT_NAME}}
+
+CUS_PRODUDT_NAME=$CF_CUS_PRODUDT_NAME
+CUS_PRODUDT_NAME=${CF_CUS_PRODUDT_NAME:-"Products"}
+CUS_SIM_ARCH=${CF_CUS_SIM_ARCH}
+
 FMK_BUNDLE=${SRCROOT}/${FMK_NAME}/${FMK_NAME}.bundle
 # Install dir will be the final output to the framework.
 # The following line create it in the root folder of the current project.
-INSTALL_DIR=${SRCROOT}/Products/${FMK_NAME}.framework
-BUNDLE_DIR=${SRCROOT}/Products/${FMK_NAME}.bundle
+INSTALL_DIR=${SRCROOT}/${CUS_PRODUDT_NAME}/${FMK_NAME}.framework
+BUNDLE_DIR=${SRCROOT}/${CUS_PRODUDT_NAME}/${FMK_NAME}.bundle
 # Working dir will be deleted after the framework creation.
 WRK_DIR=build
 DEVICE_DIR=${WRK_DIR}/Release-iphoneos/${FMK_NAME}.framework
@@ -33,7 +42,7 @@ SIMULATOR_DIR=${WRK_DIR}/Release-iphonesimulator/${FMK_NAME}.framework
 # Clean and Building both architectures.
 xcodebuild clean
 xcodebuild OTHER_CFLAGS="-fembed-bitcode" -configuration "Release" -target "${FMK_NAME}" -sdk iphoneos
-xcodebuild OTHER_CFLAGS="-fembed-bitcode" -configuration "Release" -target "${FMK_NAME}" -sdk iphonesimulator
+xcodebuild OTHER_CFLAGS="-fembed-bitcode" ${CUS_SIM_ARCH} -configuration "Release" -target "${FMK_NAME}" -sdk iphonesimulator
 # Cleaning the oldest.
 if [ -d "${INSTALL_DIR}" ]; then
     rm -rf "${INSTALL_DIR}"
@@ -58,10 +67,10 @@ lipo -create "${DEVICE_DIR}/${FMK_NAME}" "${SIMULATOR_DIR}/${FMK_NAME}" -output 
 # Remove build dir
 rm -r "${WRK_DIR}"
 
-FMK_OUTPUT_CLEAR="${INSTALL_DIR}/_CodeSignature"
-if [ -d "${FMK_OUTPUT_CLEAR}" ]; then
-    rm -rf "${FMK_OUTPUT_CLEAR}"
-fi
+# FMK_OUTPUT_CLEAR="${INSTALL_DIR}/_CodeSignature"
+# if [ -d "${FMK_OUTPUT_CLEAR}" ]; then
+#     rm -rf "${FMK_OUTPUT_CLEAR}"
+# fi
 
 # Whether to open final dir
 if [ $2 ]; then
