@@ -41,8 +41,8 @@ SIMULATOR_DIR=${WRK_DIR}/Release-iphonesimulator/${FMK_NAME}.framework
 # -configuration ${CONFIGURATION}
 # Clean and Building both architectures.
 xcodebuild clean
-xcodebuild OTHER_CFLAGS="-fembed-bitcode" -configuration "Release" -target "${FMK_NAME}" -sdk iphoneos
-xcodebuild OTHER_CFLAGS="-fembed-bitcode" ${CUS_SIM_ARCH} -configuration "Release" -target "${FMK_NAME}" -sdk iphonesimulator
+xcodebuild OTHER_CFLAGS="-fembed-bitcode" -configuration "Release" -project "${PROJECT_NAME}".xcodeproj -target "${FMK_NAME}" -sdk iphoneos
+xcodebuild OTHER_CFLAGS="-fembed-bitcode" ${CUS_SIM_ARCH} -configuration "Release" -project "${PROJECT_NAME}".xcodeproj -target "${FMK_NAME}" -sdk iphonesimulator
 # Cleaning the oldest.
 if [ -d "${INSTALL_DIR}" ]; then
     rm -rf "${INSTALL_DIR}"
